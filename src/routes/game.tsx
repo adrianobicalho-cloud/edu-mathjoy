@@ -34,7 +34,12 @@ function Game() {
   const navigate = useNavigate();
   const [profile] = useState(() => loadProfile());
   const [qIndex, setQIndex] = useState(0);
-  const [question, setQuestion] = useState<Question>(() => generateQuestion(mode as Mode, profile.level));
+  const [question, setQuestion] = useState<Question | null>(null);
+  // Generate first question on client only (avoids SSR/hydration mismatch from Math.random)
+  useEffect(() => {
+    if (!question) setQuestion(generateQuestion(mode as Mode, profile.level));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [chosen, setChosen] = useState<number | null>(null);
   const [combo, setCombo] = useState(0);
   const [score, setScore] = useState(0);
@@ -55,7 +60,7 @@ function Game() {
   }, [time, phase, chosen]);
 
   function handleAnswer(opt: number) {
-    if (chosen !== null) return;
+    if (chosen !== null || !question) return;
     setChosen(opt);
     const correct = opt === question.answer;
     if (correct) {
@@ -186,13 +191,13 @@ function Game() {
         <div className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
           Questão {qIndex + 1} de {TOTAL_QUESTIONS}
         </div>
-        <div className="text-3xl sm:text-5xl font-black text-balance">{question.prompt}</div>
+        <div className="text-2xl sm:text-4xl font-black text-balance whitespace-pre-line leading-relaxed">{question?.prompt ?? "…"}</div>
       </motion.div>
 
       <div className="grid grid-cols-2 gap-3">
-        {question.options.map((opt) => {
+        {(question?.options ?? []).map((opt) => {
           const isChosen = chosen === opt;
-          const isCorrect = opt === question.answer;
+          const isCorrect = opt === question?.answer;
           const reveal = chosen !== null;
           return (
             <motion.button

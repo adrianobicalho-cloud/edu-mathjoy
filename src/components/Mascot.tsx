@@ -11,7 +11,10 @@ export function Mascot({ mood = "happy", size = 96 }: MascotProps) {
     <motion.div
       initial={{ scale: 0 }}
       animate={{ scale: 1, rotate: mood === "celebrate" ? [0, -10, 10, -6, 6, 0] : 0 }}
-      transition={{ type: "spring", stiffness: 200, damping: 12 }}
+      transition={{
+        scale: { type: "spring", stiffness: 200, damping: 12 },
+        rotate: { duration: 0.6, ease: "easeInOut" },
+      }}
       className="relative"
       style={{ width: size, height: size }}
     >
