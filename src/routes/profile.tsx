@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ParticleBg } from "@/components/ParticleBg";
 import { Mascot } from "@/components/Mascot";
-import { loadProfile, saveProfile, type Profile, sfx, xpForLevel } from "@/lib/game";
+import { loadProfile, saveProfile, type Profile, sfx, xpForLevel, DEFAULT_PROFILE } from "@/lib/game";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/profile")({
@@ -14,9 +14,8 @@ export const Route = createFileRoute("/profile")({
 const AVATARS = ["🦊", "🐯", "🦁", "🐼", "🐸", "🦄", "🐙", "🐵", "🦉", "🐺"];
 
 function ProfilePage() {
-  const [p, setP] = useState<Profile | null>(null);
+  const [p, setP] = useState<Profile>(DEFAULT_PROFILE);
   useEffect(() => setP(loadProfile()), []);
-  if (!p) return null;
 
   const update = (patch: Partial<Profile>) => {
     const next = { ...p, ...patch };

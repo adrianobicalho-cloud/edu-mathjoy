@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Mascot } from "@/components/Mascot";
 import { ParticleBg } from "@/components/ParticleBg";
-import { loadProfile, type Profile, xpForLevel, sfx } from "@/lib/game";
+import { loadProfile, type Profile, xpForLevel, sfx, DEFAULT_PROFILE } from "@/lib/game";
 import { Flame, Trophy, Heart, Zap, Medal, Sparkles, Play } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -36,9 +36,8 @@ function Stat({ icon: Icon, label, value, color }: { icon: any; label: string; v
 }
 
 function Dashboard() {
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   useEffect(() => setProfile(loadProfile()), []);
-  if (!profile) return null;
 
   const needed = xpForLevel(profile.level);
   const progress = Math.min(100, (profile.xp % needed) / needed * 100);
