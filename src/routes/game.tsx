@@ -191,13 +191,13 @@ function Game() {
         <div className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
           Questão {qIndex + 1} de {TOTAL_QUESTIONS}
         </div>
-        <div className="text-3xl sm:text-5xl font-black text-balance">{question.prompt}</div>
+        <div className="text-2xl sm:text-4xl font-black text-balance whitespace-pre-line leading-relaxed">{question?.prompt ?? "…"}</div>
       </motion.div>
 
       <div className="grid grid-cols-2 gap-3">
-        {question.options.map((opt) => {
+        {(question?.options ?? []).map((opt) => {
           const isChosen = chosen === opt;
-          const isCorrect = opt === question.answer;
+          const isCorrect = opt === question?.answer;
           const reveal = chosen !== null;
           return (
             <motion.button
