@@ -42,17 +42,50 @@ export function generateOperationsQuestion(level: number): Question {
   return { prompt, answer, options: buildOptions(answer) };
 }
 
-export function generateLogicQuestion(level: number): Question {
-  // arithmetic sequence
+function sequencePuzzle(level: number): Question {
   const start = rand(1, 10);
   const step = rand(2, 4 + level);
   const seq = [start, start + step, start + step * 2, start + step * 3];
   const answer = start + step * 4;
+  return { prompt: `${seq.join(", ")}, ?`, answer, options: buildOptions(answer) };
+}
+
+function symbolPuzzle(level: number): Question {
+  // 3 unknowns: △ □ ○ — produce three clues then ask for sum of all three
+  const tri = rand(2, 6 + level);
+  const sq = rand(2, 8 + level);
+  const ci = rand(1, 5 + level);
+  const clues = [
+    `△ + △ + △ = ${tri * 3}`,
+    `△ + □ + □ = ${tri + sq * 2}`,
+    `□ − ○ = ${sq - ci}`,
+  ];
+  const answer = tri + sq + ci;
   return {
-    prompt: `${seq.join(", ")}, ?`,
+    prompt: `${clues.join("    ")}\n△ + □ + ○ = ?`,
     answer,
     options: buildOptions(answer),
   };
+}
+
+function oddOneOutPuzzle(_level: number): Question {
+  // Find the number that doesn't fit a multiplication table
+  const base = rand(3, 9);
+  const multiples = [base * 2, base * 3, base * 4, base * 5];
+  const odd = base * rand(2, 5) + (rand(0, 1) ? 1 : -1);
+  const idx = rand(0, 3);
+  multiples[idx] = odd;
+  return {
+    prompt: `Qual número NÃO é múltiplo de ${base}?\n${multiples.join(", ")}`,
+    answer: odd,
+    options: multiples.slice().sort(() => Math.random() - 0.5),
+  };
+}
+
+const logicGenerators = [sequencePuzzle, symbolPuzzle, symbolPuzzle, oddOneOutPuzzle];
+
+export function generateLogicQuestion(level: number): Question {
+  return logicGenerators[rand(0, logicGenerators.length - 1)](level);
 }
 
 const contextTemplates = [
