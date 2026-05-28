@@ -34,7 +34,12 @@ function Game() {
   const navigate = useNavigate();
   const [profile] = useState(() => loadProfile());
   const [qIndex, setQIndex] = useState(0);
-  const [question, setQuestion] = useState<Question>(() => generateQuestion(mode as Mode, profile.level));
+  const [question, setQuestion] = useState<Question | null>(null);
+  // Generate first question on client only (avoids SSR/hydration mismatch from Math.random)
+  useEffect(() => {
+    if (!question) setQuestion(generateQuestion(mode as Mode, profile.level));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [chosen, setChosen] = useState<number | null>(null);
   const [combo, setCombo] = useState(0);
   const [score, setScore] = useState(0);
