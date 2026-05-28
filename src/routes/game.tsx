@@ -60,7 +60,7 @@ function Game() {
   }, [time, phase, chosen]);
 
   function handleAnswer(opt: number) {
-    if (chosen !== null) return;
+    if (chosen !== null || !question) return;
     setChosen(opt);
     const correct = opt === question.answer;
     if (correct) {
