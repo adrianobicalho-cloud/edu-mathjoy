@@ -35,7 +35,7 @@ export const Route = createFileRoute("/game")({
 });
 
 const DEFAULT_QUESTIONS = 10;
-const TIME_PER_Q = 18;
+const TIME_PER_Q = 60;
 
 function Game() {
   const { mode, chapter: chapterParam } = Route.useSearch();
@@ -91,7 +91,7 @@ function Game() {
     const correct = opt === question.answer;
     if (correct) {
       sfx.correct();
-      const bonus = Math.max(0, time) * 2;
+      const bonus = Math.round((Math.max(0, time) / TIME_PER_Q) * 25);
       const multiplier = 1 + Math.floor(combo / 3) * 0.5;
       const gained = Math.round((15 + bonus) * multiplier);
       setScore((s) => s + gained);
@@ -278,8 +278,8 @@ function Game() {
       <div className="flex items-center justify-between mb-6 text-sm">
         <div className="flex items-center gap-2 glass rounded-full px-3 py-1.5">
           <Timer className="h-4 w-4 text-cyan-400" />
-          <span className={`font-bold tabular-nums ${time <= 5 ? "text-rose-400 animate-pulse" : ""}`}>
-            {time}s
+          <span className={`font-bold tabular-nums ${time <= 10 ? "text-rose-400 animate-pulse" : ""}`}>
+            {Math.floor(time / 60)}:{(time % 60).toString().padStart(2, "0")}
           </span>
         </div>
         <div className="flex items-center gap-2 glass rounded-full px-3 py-1.5">
