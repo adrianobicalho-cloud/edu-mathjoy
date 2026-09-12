@@ -1,5 +1,5 @@
 export type Operation = "+" | "-" | "×" | "÷";
-export type Mode = "operations" | "logic" | "context";
+export type Mode = "operations" | "logic" | "context" | "story";
 
 export interface Question {
   prompt: string;
@@ -123,6 +123,12 @@ export function generateContextQuestion(level: number): Question {
 export function generateQuestion(mode: Mode, level: number): Question {
   if (mode === "logic") return generateLogicQuestion(level);
   if (mode === "context") return generateContextQuestion(level);
+  if (mode === "story") {
+    // Balanced selection according to player level
+    const pool = [generateOperationsQuestion, generateLogicQuestion, generateContextQuestion];
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    return pick(level);
+  }
   return generateOperationsQuestion(level);
 }
 
@@ -153,6 +159,30 @@ export const sfx = {
   levelUp: () => {
     [523, 659, 784, 1046].forEach((f, i) => setTimeout(() => playTone(f, 0.18, "triangle"), i * 90));
   },
+  speech: () => {
+    const tones = [480, 540, 600, 680, 760];
+    const pick = tones[Math.floor(Math.random() * tones.length)];
+    playTone(pick, 0.045, "sine", 0.035);
+  },
+  relicGet: () => {
+    [523, 659, 784, 987, 1046, 1318].forEach((f, i) =>
+      setTimeout(() => playTone(f, 0.22, "triangle", 0.16), i * 110)
+    );
+  },
+  warpJump: () => {
+    const c = getCtx();
+    if (!c) return;
+    const osc = c.createOscillator();
+    const g = c.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(220, c.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1100, c.currentTime + 0.35);
+    g.gain.setValueAtTime(0.1, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.35);
+    osc.connect(g).connect(c.destination);
+    osc.start();
+    osc.stop(c.currentTime + 0.35);
+  },
 };
 
 /* Local persistence */
@@ -167,6 +197,7 @@ export interface Profile {
   bestScore: number;
   medals: string[];
   lastPlayed: string;
+  storyChapter?: number;
 }
 export const DEFAULT_PROFILE: Profile = {
   name: "Jogador",
